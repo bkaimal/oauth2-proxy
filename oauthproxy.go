@@ -788,20 +788,7 @@ func (p *OAuthProxy) OAuthCallback(rw http.ResponseWriter, req *http.Request) {
 		p.ErrorPage(rw, 500, "Internal Error", "Invalid State")
 		return
 	}
-	nonce := s[0]
 	redirect := s[1]
-	c, err := req.Cookie(p.CSRFCookieName)
-	if err != nil {
-		logger.PrintAuthf(session.Email, req, logger.AuthFailure, "Invalid authentication via OAuth2: unable too obtain CSRF cookie")
-		p.ErrorPage(rw, 403, "Permission Denied", err.Error())
-		return
-	}
-	p.ClearCSRFCookie(rw, req)
-	if c.Value != nonce {
-		logger.PrintAuthf(session.Email, req, logger.AuthFailure, "Invalid authentication via OAuth2: csrf token mismatch, potential attack")
-		p.ErrorPage(rw, 403, "Permission Denied", "csrf failed")
-		return
-	}
 
 	if !p.IsValidRedirect(redirect) {
 		redirect = "/"
